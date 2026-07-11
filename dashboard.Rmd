@@ -11,7 +11,7 @@ output:
 library(flexdashboard)
 library(tidyverse)
 
-df <- read.csv("insurance.csv", stringsAsFactors = FALSE) %>%
+insurance_df <- read.csv("insurance.csv", stringsAsFactors = FALSE) %>%
   mutate(
     sex = as.factor(sex),
     smoker = as.factor(smoker),
@@ -29,7 +29,7 @@ Row {data-height=650}
 ### Verteilung der Versicherungskosten (charges)
 
 ```{r}
-ggplot(df, aes(x = charges)) +
+ggplot(insurance_df, aes(x = charges)) +
   geom_histogram(aes(y = after_stat(density)), bins = 40,
                  fill = "steelblue", color = "white", alpha = 0.8) +
   geom_density(color = "darkred", linewidth = 1) +
@@ -40,7 +40,7 @@ ggplot(df, aes(x = charges)) +
 ### Boxplot charges
 
 ```{r}
-ggplot(df, aes(x = "", y = charges)) +
+ggplot(insurance_df, aes(x = "", y = charges)) +
   geom_boxplot(fill = "steelblue", width = 0.3) +
   labs(x = "", y = "Kosten") +
   theme_minimal()
@@ -52,20 +52,20 @@ Row {data-height=350}
 ### Key Facts
 
 ```{r}
-valueBox(paste0("$", round(mean(df$charges), 0)), 
+valueBox(paste0("$", round(mean(insurance_df$charges), 0)), 
          caption = "Durchschnittliche Kosten", icon = "fa-dollar-sign")
 ```
 
 ### Anzahl Datensaetze
 
 ```{r}
-valueBox(nrow(df), caption = "Anzahl Versicherte", icon = "fa-users")
+valueBox(nrow(insurance_df), caption = "Anzahl Versicherte", icon = "fa-users")
 ```
 
 ### Anteil Raucher
 
 ```{r}
-pct_smoker <- round(mean(df$smoker == "yes") * 100, 1)
+pct_smoker <- round(mean(insurance_df$smoker == "yes") * 100, 1)
 valueBox(paste0(pct_smoker, "%"), caption = "Raucheranteil", icon = "fa-smoking")
 ```
 
@@ -78,7 +78,7 @@ Row
 ### Altersverteilung
 
 ```{r}
-ggplot(df, aes(x = age)) +
+ggplot(insurance_df, aes(x = age)) +
   geom_histogram(binwidth = 3, fill = "#4C9F70", color = "white") +
   labs(x = "Alter", y = "Anzahl") +
   theme_minimal()
@@ -87,7 +87,7 @@ ggplot(df, aes(x = age)) +
 ### Alter vs. Kosten
 
 ```{r}
-ggplot(df, aes(x = age, y = charges)) +
+ggplot(insurance_df, aes(x = age, y = charges)) +
   geom_point(alpha = 0.3, color = "grey40") +
   geom_smooth(method = "loess", color = "#4C9F70", se = TRUE) +
   labs(x = "Alter", y = "Kosten (charges)") +
@@ -100,7 +100,7 @@ Row
 ### BMI Verteilung
 
 ```{r}
-ggplot(df, aes(x = bmi)) +
+ggplot(insurance_df, aes(x = bmi)) +
   geom_histogram(aes(y = after_stat(density)), bins = 30,
                  fill = "#E69F00", color = "white", alpha = 0.8) +
   geom_density(color = "black", linewidth = 1) +
@@ -111,7 +111,7 @@ ggplot(df, aes(x = bmi)) +
 ### BMI vs. Kosten
 
 ```{r}
-ggplot(df, aes(x = bmi, y = charges)) +
+ggplot(insurance_df, aes(x = bmi, y = charges)) +
   geom_point(alpha = 0.3, color = "grey40") +
   geom_smooth(method = "loess", color = "#E69F00", se = TRUE) +
   labs(x = "BMI", y = "Kosten (charges)") +
@@ -127,7 +127,7 @@ Row
 ### Raucherstatus (Counts)
 
 ```{r}
-ggplot(df, aes(x = smoker, fill = smoker)) +
+ggplot(insurance_df, aes(x = smoker, fill = smoker)) +
   geom_bar() +
   geom_text(stat = "count", aes(label = after_stat(count)), vjust = -0.5) +
   scale_fill_manual(values = c("no" = "#4C9F70", "yes" = "#D6604D")) +
@@ -138,7 +138,7 @@ ggplot(df, aes(x = smoker, fill = smoker)) +
 ### Kosten: Raucher vs. Nichtraucher (95% CI)
 
 ```{r}
-smoker_summary <- df %>%
+smoker_summary <- insurance_df %>%
   group_by(smoker) %>%
   summarise(
     mean_charges = mean(charges),
@@ -164,7 +164,7 @@ Row
 ### Kosten nach Geschlecht
 
 ```{r}
-ggplot(df, aes(x = sex, y = charges, fill = sex)) +
+ggplot(insurance_df, aes(x = sex, y = charges, fill = sex)) +
   geom_boxplot() +
   stat_summary(fun = median, geom = "text",
                aes(label = round(after_stat(y), 0)), vjust = -0.7, fontface = "bold") +
@@ -175,7 +175,7 @@ ggplot(df, aes(x = sex, y = charges, fill = sex)) +
 ### Kosten nach Region
 
 ```{r}
-ggplot(df, aes(x = region, y = charges, fill = region)) +
+ggplot(insurance_df, aes(x = region, y = charges, fill = region)) +
   geom_boxplot() +
   stat_summary(fun = median, geom = "text",
                aes(label = round(after_stat(y), 0)), vjust = -0.7, fontface = "bold") +
