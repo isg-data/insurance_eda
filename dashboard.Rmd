@@ -1,0 +1,184 @@
+---
+title: "Medical Cost Personal Dataset - EDA"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: bootstrap
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+
+df <- read.csv("sample_data/insurance.csv", stringsAsFactors = FALSE) %>%
+  mutate(
+    sex = as.factor(sex),
+    smoker = as.factor(smoker),
+    region = as.factor(region),
+    children = as.integer(children)
+  )
+```
+
+Overview
+=======================================================================
+
+Row {data-height=650}
+-----------------------------------------------------------------------
+
+### Verteilung der Versicherungskosten (charges)
+
+```{r}
+ggplot(df, aes(x = charges)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 40,
+                 fill = "steelblue", color = "white", alpha = 0.8) +
+  geom_density(color = "darkred", linewidth = 1) +
+  labs(x = "Kosten (charges)", y = "Dichte") +
+  theme_minimal()
+```
+
+### Boxplot charges
+
+```{r}
+ggplot(df, aes(x = "", y = charges)) +
+  geom_boxplot(fill = "steelblue", width = 0.3) +
+  labs(x = "", y = "Kosten") +
+  theme_minimal()
+```
+
+Row {data-height=350}
+-----------------------------------------------------------------------
+
+### Key Facts
+
+```{r}
+valueBox(paste0("$", round(mean(df$charges), 0)), 
+         caption = "Durchschnittliche Kosten", icon = "fa-dollar-sign")
+```
+
+### Anzahl Datensaetze
+
+```{r}
+valueBox(nrow(df), caption = "Anzahl Versicherte", icon = "fa-users")
+```
+
+### Anteil Raucher
+
+```{r}
+pct_smoker <- round(mean(df$smoker == "yes") * 100, 1)
+valueBox(paste0(pct_smoker, "%"), caption = "Raucheranteil", icon = "fa-smoking")
+```
+
+Age & BMI
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Altersverteilung
+
+```{r}
+ggplot(df, aes(x = age)) +
+  geom_histogram(binwidth = 3, fill = "#4C9F70", color = "white") +
+  labs(x = "Alter", y = "Anzahl") +
+  theme_minimal()
+```
+
+### Alter vs. Kosten
+
+```{r}
+ggplot(df, aes(x = age, y = charges)) +
+  geom_point(alpha = 0.3, color = "grey40") +
+  geom_smooth(method = "loess", color = "#4C9F70", se = TRUE) +
+  labs(x = "Alter", y = "Kosten (charges)") +
+  theme_minimal()
+```
+
+Row
+-----------------------------------------------------------------------
+
+### BMI Verteilung
+
+```{r}
+ggplot(df, aes(x = bmi)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 30,
+                 fill = "#E69F00", color = "white", alpha = 0.8) +
+  geom_density(color = "black", linewidth = 1) +
+  labs(x = "BMI", y = "Dichte") +
+  theme_minimal()
+```
+
+### BMI vs. Kosten
+
+```{r}
+ggplot(df, aes(x = bmi, y = charges)) +
+  geom_point(alpha = 0.3, color = "grey40") +
+  geom_smooth(method = "loess", color = "#E69F00", se = TRUE) +
+  labs(x = "BMI", y = "Kosten (charges)") +
+  theme_minimal()
+```
+
+Smoker, Sex & Region
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Raucherstatus (Counts)
+
+```{r}
+ggplot(df, aes(x = smoker, fill = smoker)) +
+  geom_bar() +
+  geom_text(stat = "count", aes(label = after_stat(count)), vjust = -0.5) +
+  scale_fill_manual(values = c("no" = "#4C9F70", "yes" = "#D6604D")) +
+  labs(x = "Raucher", y = "Anzahl") +
+  theme_minimal() + theme(legend.position = "none")
+```
+
+### Kosten: Raucher vs. Nichtraucher (95% CI)
+
+```{r}
+smoker_summary <- df %>%
+  group_by(smoker) %>%
+  summarise(
+    mean_charges = mean(charges),
+    sd_charges = sd(charges),
+    n = n(),
+    se = sd_charges / sqrt(n),
+    ci_lower = mean_charges - qt(0.975, df = n - 1) * se,
+    ci_upper = mean_charges + qt(0.975, df = n - 1) * se
+  )
+
+ggplot(smoker_summary, aes(x = smoker, y = mean_charges, fill = smoker)) +
+  geom_col(width = 0.6) +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.15) +
+  geom_text(aes(label = round(mean_charges, 0)), vjust = -2.5, fontface = "bold") +
+  scale_fill_manual(values = c("no" = "#4C9F70", "yes" = "#D6604D")) +
+  labs(x = "Raucherstatus", y = "Durchschnittliche Kosten") +
+  theme_minimal() + theme(legend.position = "none")
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Kosten nach Geschlecht
+
+```{r}
+ggplot(df, aes(x = sex, y = charges, fill = sex)) +
+  geom_boxplot() +
+  stat_summary(fun = median, geom = "text",
+               aes(label = round(after_stat(y), 0)), vjust = -0.7, fontface = "bold") +
+  labs(x = "Geschlecht", y = "Kosten") +
+  theme_minimal() + theme(legend.position = "none")
+```
+
+### Kosten nach Region
+
+```{r}
+ggplot(df, aes(x = region, y = charges, fill = region)) +
+  geom_boxplot() +
+  stat_summary(fun = median, geom = "text",
+               aes(label = round(after_stat(y), 0)), vjust = -0.7, fontface = "bold") +
+  labs(x = "Region", y = "Kosten") +
+  theme_minimal() + theme(legend.position = "none")
+```
