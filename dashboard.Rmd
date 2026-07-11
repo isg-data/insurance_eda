@@ -11,7 +11,7 @@ output:
 library(flexdashboard)
 library(tidyverse)
 
-df <- read.csv("sample_data/insurance.csv", stringsAsFactors = FALSE) %>%
+df <- read.csv("insurance.csv", stringsAsFactors = FALSE) %>%
   mutate(
     sex = as.factor(sex),
     smoker = as.factor(smoker),
