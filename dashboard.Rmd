@@ -26,18 +26,18 @@ Overview
 Row {data-height=650}
 -----------------------------------------------------------------------
 
-### Verteilung der Versicherungskosten (charges)
+### Verteilung der Versicherungskosten
 
 ```{r}
 ggplot(insurance_df, aes(x = charges)) +
   geom_histogram(aes(y = after_stat(density)), bins = 40,
                  fill = "steelblue", color = "white", alpha = 0.8) +
   geom_density(color = "darkred", linewidth = 1) +
-  labs(title = "Verteilung der Versicherungskosten in USD", x = "Kosten", y = "") +
+  labs(title = "Verteilung der Versicherungskosten in USD", x = "Versicherungskosten", y = "") +
   theme_minimal()
 ```
 
-### Boxplot charges
+### Boxplot Versicherungskosten
 
 ```{r}
 ggplot(insurance_df, aes(x = "", y = charges)) +
@@ -53,7 +53,7 @@ Row {data-height=350}
 
 ```{r}
 valueBox(paste0("$", round(mean(insurance_df$charges), 0)), 
-         caption = "Durchschnittliche Kosten", icon = "fa-dollar-sign")
+         caption = "Durchschnittliche Versicherungskosten in USD", icon = "fa-dollar-sign")
 ```
 
 ### Anzahl Datensaetze
@@ -84,7 +84,7 @@ ggplot(insurance_df, aes(x = age)) +
   theme_minimal()
 ```
 
-### Alter vs. Kosten
+### Alter vs. Versicherungskosten
 
 ```{r}
 ggplot(insurance_df, aes(x = age, y = charges)) +
@@ -109,14 +109,14 @@ ggplot(insurance_df, aes(x = bmi)) +
   theme_minimal()
 ```
 
-### BMI vs. Kosten
+### BMI vs. Versicherungskosten
 
 ```{r}
 ggplot(insurance_df, aes(x = bmi, y = charges)) +
   geom_point(alpha = 0.3, color = "grey40") +
   geom_smooth(method = "loess", color = "#E69F00", se = TRUE) +
   labs(title = "Zusammenhang zwischen BMI und Versicherungskosten in USD",
-       x = "BMI", y = "Kosten (charges)") +
+       x = "BMI", y = "Versicherungskosten") +
   theme_minimal()
 ```
 
@@ -126,7 +126,7 @@ Smoker, Sex & Region
 Row
 -----------------------------------------------------------------------
 
-### Raucherstatus (Counts)
+### Raucherstatus
 
 ```{r}
 ggplot(insurance_df, aes(x = smoker, fill = smoker)) +
@@ -137,7 +137,7 @@ ggplot(insurance_df, aes(x = smoker, fill = smoker)) +
   theme_minimal() + theme(legend.position = "none")
 ```
 
-### Kosten: Raucher vs. Nichtraucher (95% CI)
+### Versicherungskosten: Raucher vs. Nichtraucher
 
 ```{r}
 smoker_summary <- insurance_df %>%
@@ -157,9 +157,8 @@ ggplot(smoker_summary, aes(x = smoker, y = mean_charges, fill = smoker)) +
   geom_text(aes(label = round(mean_charges, 0)), vjust = -2.5, fontface = "bold") +
   scale_fill_manual(values = c("no" = "#4C9F70", "yes" = "#D6604D")) +
   labs(
-    title = "Durchschnittliche Versicherungskosten: Raucher vs. Nichtraucher",
-    subtitle = "Fehlerbalken zeigen 95%-Konfidenzintervall",
-    x = "Raucherstatus", y = "Durchschnittliche Kosten (charges)"
+    title = "Durchschnittliche Versicherungskosten in USD: Raucher vs. Nichtraucher",
+    x = "Raucherstatus", y = "Durchschnittliche Versicherungskosten"
   ) +
   theme_minimal() + theme(legend.position = "none")
 ```
@@ -167,7 +166,7 @@ ggplot(smoker_summary, aes(x = smoker, y = mean_charges, fill = smoker)) +
 Row
 -----------------------------------------------------------------------
 
-### Kosten nach Geschlecht
+### Versicherungskosten nach Geschlecht
 
 ```{r}
 ggplot(insurance_df, aes(x = sex, y = charges, fill = sex)) +
@@ -178,7 +177,7 @@ ggplot(insurance_df, aes(x = sex, y = charges, fill = sex)) +
   theme_minimal() + theme(legend.position = "none")
 ```
 
-### Kosten nach Region
+### Versicherungskosten nach US-Region
 
 ```{r}
 ggplot(insurance_df, aes(x = region, y = charges, fill = region)) +
